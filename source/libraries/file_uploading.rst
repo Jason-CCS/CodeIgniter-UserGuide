@@ -61,7 +61,7 @@ CodeIgniter 的檔案上傳類別允許檔案進行上傳，你可以多種偏�
 The Success Page
 ================
 
-使用文字編輯器，建立一個成功頁 upload_success.php，其中放置以下的程式碼並儲存於
+使用文字編輯器，建立一個成功頁叫做 upload_success.php，其中放置以下的程式碼並儲存於
 **application/views/** directory::
 
 	<html>
@@ -146,9 +146,9 @@ The Success Page
 你會看到一個上傳檔案的表單，試著上傳一個影像檔案（jpg, gif, or png) 都可。
 如果在控制器設定的路徑是正確的話，那們一切會執行正常。
 
-***************
+********
 參考指南
-***************
+********
 
 初始化上傳類別
 =============================
@@ -156,6 +156,7 @@ The Success Page
 像大部分其他 CodeIgniter 的類別，Upload class 是使用這個方法 ``$this->load->library()`` 在 controller 初始化的::
 
 	$this->load->library('upload');
+
 一旦 Upload class 已被載入，物件將可以被使用如下方式：
 $this->upload
 

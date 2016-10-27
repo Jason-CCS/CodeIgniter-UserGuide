@@ -1,9 +1,8 @@
 ###############
-Form Validation
+表單驗證
 ###############
 
-CodeIgniter provides a comprehensive form validation and data prepping
-class that helps minimize the amount of code you'll write.
+CodeIgniter 提供一個全面的表單驗證功能與資料預處理類別，它可以幫忙簡化你撰寫程式的數量
 
 .. contents:: Page Contents
 
@@ -11,60 +10,43 @@ class that helps minimize the amount of code you'll write.
 Overview
 ********
 
-Before explaining CodeIgniter's approach to data validation, let's
-describe the ideal scenario:
+在解釋表單驗證功能之前，我們先描述一個理想的表單驗證場景：
 
-#. A form is displayed.
-#. You fill it in and submit it.
-#. If you submitted something invalid, or perhaps missed a required
-   item, the form is redisplayed containing your data along with an
-   error message describing the problem.
-#. This process continues until you have submitted a valid form.
+#. 一個表單已經完成
+#. 你填寫好這個表單並且提交它
+#. 如果你有什麼地方填寫錯誤或者是漏填必要的資料時，這個表單會展示你原本的資料並且顯示訊息說明填寫錯誤的原因
+#. 這整個過程一直持續到你提交一個正確的表單資料
 
-On the receiving end, the script must:
+在伺服器接收方，資料必須：
 
-#. Check for required data.
-#. Verify that the data is of the correct type, and meets the correct
-   criteria. For example, if a username is submitted it must be
-   validated to contain only permitted characters. It must be of a
-   minimum length, and not exceed a maximum length. The username can't
-   be someone else's existing username, or perhaps even a reserved word.
-   Etc.
-#. Sanitize the data for security.
-#. Pre-format the data if needed (Does the data need to be trimmed? HTML
-   encoded? Etc.)
-#. Prep the data for insertion in the database.
+#. 檢查必填的資料
+#. 驗證該資料的型別與確認該資料的內容格式要求；舉例來說，註冊的使用者名稱只能包含被允許的字元，它有最短長度，以及最常長度的要求。
+   還有， username 不能與任何已存在的其他使用者名稱相同，也不能使用系統地保留字，等等其他類似要求。
+#. 為資料的安全性消毒。
+#. 對資料做格式化（比方說，資料是否需要修剪多餘字元？對 HTML 做編碼？ 等其他類似處理。）
+#. 插入資料庫前對資料做預處理
 
-Although there is nothing terribly complex about the above process, it
-usually requires a significant amount of code, and to display error
-messages, various control structures are usually placed within the form
-HTML. Form validation, while simple to create, is generally very messy
-and tedious to implement.
+雖然以上的過程並不會太複雜，但是實際上對這些資料做處理卻需要大量的程式碼，顯示錯誤訊息的功能，多個控制結構被置放於 HTML 表單中。
+表單驗證功能，雖然表單容易製作，但是實作上是麻煩且繁複的的過程。
 
 ************************
 表單驗證教學
 ************************
 
-測試 fork 可否 merge 至 原本的 origin.
-What follows is a "hands on" tutorial for implementing CodeIgniters Form
-Validation.
+接下來是一個容易上手的表單驗證教學
 
-In order to implement form validation you'll need three things:
+要實作表單驗證你將需要以下這三件事:
 
-#. A :doc:`View <../general/views>` file containing a form.
-#. A View file containing a "success" message to be displayed upon
-   successful submission.
-#. A :doc:`controller <../general/controllers>` method to receive and
-   process the submitted data.
+#. :doc:`View <../general/views>` 一個擁有表單的檔。
+#. 一個 View file 呈現成功訊息，當表單有順利的送出時。
+#. :doc:`controller <../general/controllers>` 一個控制器來接收與處理由表單送出的資料。
 
-Let's create those three things, using a member sign-up form as the
-example.
+讓我們使用會員註冊表單作為範例，實作這三個檔案。
 
 The Form
 ========
 
-Using a text editor, create a form called myform.php. In it, place this
-code and save it to your application/views/ folder::
+使用文字編輯器，建立一個表單叫做 myform.php。 其中，放入以下這段程式碼並儲存到 application/views/ folder::
 
 	<html>
 	<head>
@@ -98,8 +80,7 @@ code and save it to your application/views/ folder::
 The Success Page
 ================
 
-Using a text editor, create a form called formsuccess.php. In it, place
-this code and save it to your application/views/ folder::
+使用文字編輯器，建立一個頁面叫做 formsuccess.php。 其中，放入以下這段程式碼並儲存到 application/views/ folder::
 
 	<html>
 	<head>
@@ -117,8 +98,7 @@ this code and save it to your application/views/ folder::
 The Controller
 ==============
 
-Using a text editor, create a controller called Form.php. In it, place
-this code and save it to your application/controllers/ folder::
+使用文字編輯器，建立一個控制器叫做 Form.php。 其中，放入以下這段程式碼並儲存到 application/controllers/ folder::
 
 	<?php
 
@@ -144,77 +124,62 @@ this code and save it to your application/controllers/ folder::
 Try it!
 =======
 
-To try your form, visit your site using a URL similar to this one::
+試看看你的表單，訪問你的網站，使用如下相似的 url 來訪問你的網站::
 
 	example.com/index.php/form/
 
-If you submit the form you should simply see the form reload. That's
-because you haven't set up any validation rules yet.
+當你送出表單時，你將只會看到表單被重新載入，這是因為你還沒有設置任何的表單驗證規則。
 
-**Since you haven't told the Form Validation class to validate anything
-yet, it returns FALSE (boolean false) by default. ``The run()`` method
-only returns TRUE if it has successfully applied your rules without any
-of them failing.**
+**因為你還沒有設置任何的表單驗證規則，預設它會回傳 FALSE。當你送出的表單通過所有的驗證，``The run()``方法將會回傳 TRUE。
 
-Explanation
+解  說
 ===========
 
-You'll notice several things about the above pages:
+在上方的範例，你會注意到幾件事:
 
-The form (myform.php) is a standard web form with a couple exceptions:
+這個表單是標準的網頁表單除了:
 
-#. It uses a form helper to create the form opening. Technically, this
-   isn't necessary. You could create the form using standard HTML.
-   However, the benefit of using the helper is that it generates the
-   action URL for you, based on the URL in your config file. This makes
-   your application more portable in the event your URLs change.
-#. At the top of the form you'll notice the following function call:
+#. 它使用表單輔助函式來建立表單的起始標籤。在技術上您是不需要如此做的，你可以使用標準的 HTML 語法來建立，
+   然而，使用輔助函式的好處在於它會自動依據您在 config file 設定的 URL 來配置你的 action URL，這將使此
+   網站更便於轉移在不同的主機之間，即便您的 URL 有所改變。
+#. 在表單的最上面你會注意到一個函式呼叫:
    ::
 
 	<?php echo validation_errors(); ?>
 
-   This function will return any error messages sent back by the
-   validator. If there are no messages it returns an empty string.
+   當驗證規則有誤時，這個函式將會回傳任何的錯誤資訊，如果沒有錯誤則回傳空字串。
 
-The controller (Form.php) has one method: ``index()``. This method
-initializes the validation class and loads the form helper and URL
-helper used by your view files. It also runs the validation routine.
-Based on whether the validation was successful it either presents the
-form or the success page.
+控制器有個方法叫 ``index()``。 這個方法初始化驗證類與載入表單輔助函式與 URL 輔助函式，
+此控制器也執行驗證過程，由驗證過程的正確與否來展示表單或是成功頁面。
 
 .. _setting-validation-rules:
 
-Setting Validation Rules
+設定驗證規則
 ========================
 
-CodeIgniter lets you set as many validation rules as you need for a
-given field, cascading them in order, and it even lets you prep and
-pre-process the field data at the same time. To set validation rules you
-will use the ``set_rules()`` method::
+CodeIgniter 可以讓你對單一個欄位依需求的進行多種驗證，並同時給予你對欄位資料進行預準備或前置準備，
+為了設置驗證規則你將會使用 ``set_rules()``方法::
 
 	$this->form_validation->set_rules();
 
-The above method takes **three** parameters as input:
+上面的方法會設定三個參數數入:
 
-#. The field name - the exact name you've given the form field.
-#. A "human" name for this field, which will be inserted into the error
-   message. For example, if your field is named "user" you might give it
-   a human name of "Username".
-#. The validation rules for this form field.
-#. (optional) Set custom error messages on any rules given for current field. If not provided will use the default one.
+#. 欄位名 - 你為表單欄位所取的名字。
+#. 為這個欄位取一個人看得懂的名字，這個名字將會在錯誤出現時插入到錯誤訊息中。舉例來說，欄位名如果是 user，你可能提供更易於人解讀的名字 “Username。
+#. 對此欄位的驗證規則。
+#. （可選） 在此欄位設定自訂的錯誤訊息，如果沒有設定將會使用預設值。
 
-.. note:: If you would like the field name to be stored in a language
-	file, please see :ref:`translating-field-names`.
+.. note:: 如果你想要欄位名被儲存在語言檔案裡，請參考
+	:ref:`translating-field-names`.
 
-Here is an example. In your controller (Form.php), add this code just
-below the validation initialization method::
+這裡有個範例。在你的控制器中 (Form.php)，增加以下這些程式碼在驗證初始化方法的下面::
 
 	$this->form_validation->set_rules('username', 'Username', 'required');
 	$this->form_validation->set_rules('password', 'Password', 'required');
 	$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
 	$this->form_validation->set_rules('email', 'Email', 'required');
 
-Your controller should now look like this::
+你的控制器現在應該看起來如下::
 
 	<?php
 
@@ -244,19 +209,14 @@ Your controller should now look like this::
 		}
 	}
 
-Now submit the form with the fields blank and you should see the error
-messages. If you submit the form with all the fields populated you'll
-see your success page.
+現在送出空白表單，沒有填入任何資料，你將會看到錯誤訊息。如果你送的表單有資料，那麼你會看到成功的頁面。
 
-.. note:: The form fields are not yet being re-populated with the data
-	when there is an error. We'll get to that shortly.
+.. note:: 發生驗證錯誤時，表單欄位還未被正式重新填上舊資料，以下將繼續。
 
-Setting Rules Using an Array
+使用陣列來設定驗證規則
 ============================
 
-Before moving on it should be noted that the rule setting method can
-be passed an array if you prefer to set all your rules in one action. If
-you use this approach, you must name your array keys as indicated::
+再繼續之前，我們可以使用陣列的方式來設定驗證規則，使用這個方法，你必須設定好你的 'field'。
 
 	$config = array(
 		array(
@@ -286,11 +246,10 @@ you use this approach, you must name your array keys as indicated::
 
 	$this->form_validation->set_rules($config);
 
-Cascading Rules
-===============
+疊加驗證規則
+===========
 
-CodeIgniter lets you pipe multiple rules together. Let's try it. Change
-your rules in the third parameter of rule setting method, like this::
+CodeIgniter 可以讓你同時有多個驗證規則。在第三個參數設定組合的驗證規則，如下::
 
 	$this->form_validation->set_rules(
 		'username', 'Username',
@@ -304,59 +263,45 @@ your rules in the third parameter of rule setting method, like this::
 	$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required|matches[password]');
 	$this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
 
-The above code sets the following rules:
+以上的程式碼設定以下的規則:
 
-#. The username field be no shorter than 5 characters and no longer than
-   12.
-#. The password field must match the password confirmation field.
-#. The email field must contain a valid email address.
+#. 用戶名欄位最短為 5 個字元，最常為 12 個字元。
+#. 密碼欄位必須符合密碼驗證規則。
+#. 信箱欄位必須包含有效的信箱地址表達。
 
-Give it a try! Submit your form without the proper data and you'll see
-new error messages that correspond to your new rules. There are numerous
-rules available which you can read about in the validation reference.
+試看看！在沒有填入正確的表單送出時，你將會看到新的錯誤訊息。你可以在 validation reference 查到許多的驗證規則。
 
-.. note:: You can also pass an array of rules to ``set_rules()``,
-	instead of a string. Example::
+.. note:: 你可以傳送一個陣列的驗證規則到``set_rules()``來取代使用字串的方式設定，例如::
 
 	$this->form_validation->set_rules('username', 'Username', array('required', 'min_length[5]'));
 
-Prepping Data
+資料預處理
 =============
 
-In addition to the validation method like the ones we used above, you
-can also prep your data in various ways. For example, you can set up
-rules like this::
+除了以上我們所設定的驗證方法，你可以對資料進行預處理。舉裡來說，你可以設定一些規則如下::
 
 	$this->form_validation->set_rules('username', 'Username', 'trim|required|min_length[5]|max_length[12]');
 	$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[8]');
 	$this->form_validation->set_rules('passconf', 'Password Confirmation', 'trim|required|matches[password]');
 	$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
 
-In the above example, we are "trimming" the fields, checking for length
-where necessary and making sure that both password fields match.
+在上面的例子，我們使用 "trimming" 來清除資料前後多餘的空百，並且檢查資料的長度，確認第二次輸入的密碼是否符合第一次輸入的密碼。
 
-**Any native PHP function that accepts one parameter can be used as a
-rule, like ``htmlspecialchars()``, ``trim()``, etc.**
+**任何原生的 PHP 函式如果只接受一個參數，那麼這些函數或方法都可以被拿來使用為驗證規則，如``htmlspecialchars()``, ``trim()``, 等等其他。**
 
-.. note:: You will generally want to use the prepping functions
-	**after** the validation rules so if there is an error, the
-	original data will be shown in the form.
+.. note:: 你可能在資料驗證後才使用預處理，所以當有錯誤時，原始的資料可以被重新展現。
 
-Re-populating the form
+重新填入資料
 ======================
 
-Thus far we have only been dealing with errors. It's time to repopulate
-the form field with the submitted data. CodeIgniter offers several
-helper functions that permit you to do this. The one you will use most
-commonly is::
+到目前為止，我們只有處理錯誤而已。當錯誤發生時，我們必須重新填入資料到表單欄位中。CodeIgniter 提供許多個輔助函式來完成這件事，
+最常被使用到的是::
 
 	set_value('field name')
 
-Open your myform.php view file and update the **value** in each field
-using the :php:func:`set_value()` function:
+打開你的 myform.php 視圖，然後使用 :php:func:`set_value()` 函式來更新每個欄位的**value**:
 
-**Don't forget to include each field name in the :php:func:`set_value()`
-function calls!**
+**不要忘記要包含欄位名稱當使用 :php:func:`set_value()` 的時候**
 
 ::
 
@@ -389,35 +334,29 @@ function calls!**
 	</body>
 	</html>
 
-Now reload your page and submit the form so that it triggers an error.
-Your form fields should now be re-populated
+現在，重新載入你的頁面，並且送出一個表單資料使其產生錯誤，你會發現你的表單欄位資料已竟被重新填上了。
 
 .. note:: The :ref:`class-reference` section below
 	contains methods that permit you to re-populate <select> menus,
 	radio buttons, and checkboxes.
 
-.. important:: If you use an array as the name of a form field, you
-	must supply it as an array to the function. Example::
+.. important:: 如果你是用陣列的方式作為表單欄位的名字，那麼你必須提供相同的陣列型態，如下範例::
 
 	<input type="text" name="colors[]" value="<?php echo set_value('colors[]'); ?>" size="50" />
 
-For more info please see the :ref:`using-arrays-as-field-names` section below.
+需要更多的資訊，請參考 :ref:`using-arrays-as-field-names`。
 
-Callbacks: Your own Validation Methods
+回呼: 你自己的驗證方法
 ======================================
 
-The validation system supports callbacks to your own validation
-methods. This permits you to extend the validation class to meet your
-needs. For example, if you need to run a database query to see if the
-user is choosing a unique username, you can create a callback method
-that does that. Let's create an example of this.
+驗證類別可以接受回呼函式來當作客製的驗證規則。舉例來說，如果你需要查詢資料庫來確定使用者輸入的是唯一的帳戶名，
+你可以撰寫一個回呼方法，來完成這件事，來看看以下範例:
 
-In your controller, change the "username" rule to this::
+在控制器當中，改變 username 的規則為 'callback_username_check'::
 
 	$this->form_validation->set_rules('username', 'Username', 'callback_username_check');
 
-Then add a new method called ``username_check()`` to your controller.
-Here's how your controller should now look::
+然後增加新的函式叫做 ``username_check()`` 在控制器當中，以下是你目前控制器應該的樣子::
 
 	<?php
 
@@ -459,29 +398,21 @@ Here's how your controller should now look::
 
 	}
 
-Reload your form and submit it with the word "test" as the username. You
-can see that the form field data was passed to your callback method
-for you to process.
+重新載入你的表單，然後送出 test 當作帳戶名，你會看到你送出的資料被送到回呼函式來進行處理。
 
-To invoke a callback just put the method name in a rule, with
-"callback\_" as the rule **prefix**. If you need to receive an extra
-parameter in your callback method, just add it normally after the
-method name between square brackets, as in: "callback_foo**[bar]**",
-then it will be passed as the second argument of your callback method.
+為了調用回呼函式，只要在規則中放入你的方法名，並增加 "callback\_" 作為 **prefix**。如果你需要接受額外的參數到你的回呼函式，
+只要在方法名的後面加上由中括號包起來的參數名，如此該參數就會作為的二個參數來調用你所呼叫的方法，如同 "callback_foo**[bar]**" 這樣子。
 
-.. note:: You can also process the form data that is passed to your
-	callback and return it. If your callback returns anything other than a
-	boolean TRUE/FALSE it is assumed that the data is your newly processed
-	form data.
+.. note:: 你也可以在你的回呼函式回傳值。如果你的回呼函式回傳的不是布林值，那麼該值將成為你該欄位的新值。
 
-Callable: Use anything as a rule
+使用任何可呼叫的方法作為驗證規則
 ================================
 
-If callback rules aren't good enough for you (for example, because they are
+如果回呼函式還不足以滿足需求（比方說，該函式被限制宣告在某一控制器當中），不必覺得失望，還有一個方法可以來做客製化的驗證規則。
 limited to your controller), don't get disappointed, there's one more way
 to create custom rules: anything that ``is_callable()`` would return TRUE for.
 
-Consider the following example::
+參考下面這個範例::
 
 	$this->form_validation->set_rules(
 		'username', 'Username',
@@ -491,13 +422,10 @@ Consider the following example::
 		)
 	);
 
-The above code would use the ``valid_username()`` method from your
-``Users_model`` object.
+上面的程式碼使用 ``Users_model`` 物件中的 ``valid_username()`` 方法來當作驗證規則。
 
-This is just an example of course, and callbacks aren't limited to models.
-You can use any object/method that accepts the field value as its' first
-parameter. Or if you're running PHP 5.3+, you can also use an anonymous
-function::
+這當然只是一個範例，回呼函式並不只限制在 models 中，你可以使用物件或方法的第一個參數來接受表單值並作為驗證規則，
+或者在 PHP 5.3+，你也可以使用匿名方法，如下::
 
 	$this->form_validation->set_rules(
 		'username', 'Username',
@@ -510,10 +438,8 @@ function::
 		)
 	);
 
-Of course, since a Callable rule by itself is not a string, it isn't
-a rule name either. That is a problem when you want to set error messages
-for them. In order to get around that problem, you can put such rules as
-the second element of an array, with the first one being the rule name::
+當然，一個可呼叫的驗證規則其本身並不是一個字串，也不是一個規則的名字，則將會在設置錯誤訊息時發生麻煩。
+處理這個麻煩的方法是，你可以使用一個陣列，第一個參數放置驗證規則的名字，第二個參數則放置驗證規則的方法::
 
 	$this->form_validation->set_rules(
 		'username', 'Username',
@@ -541,95 +467,77 @@ Anonymous function (PHP 5.3+) version::
 
 .. _setting-error-messages:
 
-Setting Error Messages
-======================
+設置錯誤訊息
+===========
 
-All of the native error messages are located in the following language
-file: **system/language/english/form_validation_lang.php**
+所有的原生錯誤訊息被放置在: **system/language/english/form_validation_lang.php**
 
-To set your own global custom message for a rule, you can either 
-extend/override the language file by creating your own in
-**application/language/english/form_validation_lang.php** (read more
-about this in the :doc:`Language Class <language>` documentation),
-or use the following method::
+要設置您個人的全域錯誤訊息，你可以使用 **application/language/english/form_validation_lang.php** 來擴展/覆載新的語言規則，
+（閱讀更多相關文件 :doc:`Language Class <language>`），或是使用以下的方法::
 
 	$this->form_validation->set_message('rule', 'Error Message');
 
-If you need to set a custom error message for a particular field on 
-some particular rule, use the set_rules() method::
+如果你需要對一個特定欄位來設置一個自訂的錯誤訊息，使用 set_rules() method::
 
 	$this->form_validation->set_rules('field_name', 'Field Label', 'rule1|rule2|rule3',
 		array('rule2' => 'Error Message on rule2 for this field_name')
 	);
 
-Where rule corresponds to the name of a particular rule, and Error
-Message is the text you would like displayed.
+其中 rule 代表某一個特定的規則，而錯誤訊息是一串文字，其將在發生驗證錯誤的時候顯示。
 
-If you'd like to include a field's "human" name, or the optional
-parameter some rules allow for (such as max_length), you can add the
-**{field}** and **{param}** tags to your message, respectively::
+如果你喜歡在錯誤訊息中包含對人類友好的欄位名（也就是第二個參數），或是一些非必要規則的規則名與其設定值，
+你可以加上 **{field}** 和 **{param}** 至你的錯誤訊息中，如下程式碼::
 
 	$this->form_validation->set_message('min_length', '{field} must have at least {param} characters.');
 
-On a field with the human name Username and a rule of min_length[5], an
-error would display: "Username must have at least 5 characters."
+對人類友好的欄位名與其最短長度 5 的規則下，錯誤將會顯示："Username must have at least 5 characters."
 
 .. note:: The old `sprintf()` method of using **%s** in your error messages
 	will still work, however it will override the tags above. You should
 	use one or the other.
 
-In the callback rule example above, the error message was set by passing
-the name of the method (without the "callback\_" prefix)::
+以上對回呼函式形式的規則進行錯誤訊息設置，並不需要 "callback\_" 前綴::
 
 	$this->form_validation->set_message('username_check')
 
 .. _translating-field-names:
 
-Translating Field Names
+欄位名的翻譯
 =======================
 
-If you would like to store the "human" name you passed to the
-``set_rules()`` method in a language file, and therefore make the name
-able to be translated, here's how:
+如果你想要將對人類有好的翻譯名儲存在語言檔案中，使得相同欄位名的欄位可以使用相同的翻譯名，以下說明如何設定：
 
-First, prefix your "human" name with **lang:**, as in this example::
+第一，使用 **lang:** 前綴你的人類友好參數，如下範例::
 
 	 $this->form_validation->set_rules('first_name', 'lang:first_name', 'required');
 
-Then, store the name in one of your language file arrays (without the
-prefix)::
+然後，在語言檔案中儲存沒有前綴的翻譯名於陣列中::
 
 	$lang['first_name'] = 'First Name';
 
-.. note:: If you store your array item in a language file that is not
-	loaded automatically by CI, you'll need to remember to load it in your
-	controller using::
+.. note:: 如果你儲存的語言檔沒有被 CI 自動載入，你可以在控制器手動載入::
 
 	$this->lang->load('file_name');
 
-See the :doc:`Language Class <language>` page for more info regarding
-language files.
+參考 :doc:`Language Class <language>` 頁面來獲取更多語言檔的說明。
 
 .. _changing-delimiters:
 
-Changing the Error Delimiters
+改變錯誤定義符
 =============================
 
-By default, the Form Validation class adds a paragraph tag (<p>) around
-each error message shown. You can either change these delimiters
-globally, individually, or change the defaults in a config file.
+預設中，Form Validation class 會增加一個段落標籤 (<p>) 於每一個錯誤訊息的外圍。
+你可以全域的、個別的、或於設定檔中修改這些定義符。
 
 #. **Changing delimiters Globally**
-   To globally change the error delimiters, in your controller method,
-   just after loading the Form Validation class, add this::
+   要全域的修改錯誤定義符，於你的控制器載入 Form Validation class 後，增加定義符如下::
 
       $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
 
-   In this example, we've switched to using div tags.
+   在這個範例中，我們改用 <div> 標籤來作為定義符。
 
 #. **Changing delimiters Individually**
-   Each of the two error generating functions shown in this tutorial can
-   be supplied their own delimiters as follows::
+   此教學的兩個錯誤函式都可以個別設定錯誤定義符如下::
 
       <?php echo form_error('field name', '<div class="error">', '</div>'); ?>
 
@@ -638,18 +546,17 @@ globally, individually, or change the defaults in a config file.
       <?php echo validation_errors('<div class="error">', '</div>'); ?>
 
 #. **Set delimiters in a config file**
-   You can add your error delimiters in application/config/form_validation.php as follows::
+   你可以設定自己的錯誤定義符於 application/config/form_validation.php 如下::
 
       $config['error_prefix'] = '<div class="error_prefix">';
       $config['error_suffix'] = '</div>';
 
-Showing Errors Individually
+依欄位地顯示錯誤
 ===========================
 
-If you prefer to show an error message next to each form field, rather
-than as a list, you can use the :php:func:`form_error()` function.
+如果你偏好將錯誤訊息顯示在欄位旁邊，你可以使用 :php:func:`form_error()` 函式。
 
-Try it! Change your form so that it looks like this::
+試看看，將你的表單改變如下::
 
 	<h5>Username</h5>
 	<?php echo form_error('username'); ?>
@@ -667,23 +574,21 @@ Try it! Change your form so that it looks like this::
 	<?php echo form_error('email'); ?>
 	<input type="text" name="email" value="<?php echo set_value('email'); ?>" size="50" />
 
-If there are no errors, nothing will be shown. If there is an error, the
-message will appear.
+只有在有錯誤的時候，該錯誤訊息才會出現，否則不會。
 
-.. important:: If you use an array as the name of a form field, you
-	must supply it as an array to the function. Example::
+.. important:: 如果你有使用陣列於欄位名中，你也必須提供相同的格式在函式中。例如::
 
 	<?php echo form_error('options[size]'); ?>
 	<input type="text" name="options[size]" value="<?php echo set_value("options[size]"); ?>" size="50" />
 
-For more info please see the :ref:`using-arrays-as-field-names` section below.
+需要更多的資訊請參考 :ref:`using-arrays-as-field-names`。
 
-Validating an Array (other than $_POST)
+驗證陣列
 =======================================
 
-Sometimes you may want to validate an array that does not originate from ``$_POST`` data.
+有時候你會想驗證陣列，而非從 ``$_POST`` 資料而來。
 
-In this case, you can specify the array to be validated::
+在這個案例中，你可以驗證指定的陣列。
 
 	$data = array(
 		'username' => 'johndoe',
@@ -693,38 +598,28 @@ In this case, you can specify the array to be validated::
 
 	$this->form_validation->set_data($data);
 
-Creating validation rules, running the validation, and retrieving error
-messages works the same whether you are validating ``$_POST`` data or
-another array of your choice.
+創建驗證規則，執行驗證，這跟驗證 ``$_POST`` 資料是一樣的。
 
-.. important:: You have to call the ``set_data()`` method *before* defining
-	any validation rules.
+.. important:: 你必須在設定驗證規則前呼叫 ``set_data()`` 方法。
 
-.. important:: If you want to validate more than one array during a single
-	execution, then you should call the ``reset_validation()`` method
-	before setting up rules and validating the new array.
+.. important:: 如果你想要驗證一個以上的資料陣列，那麼你先呼叫 ``reset_validation()`` 方法，再設定驗證規則與執行驗證。
 
-For more info please see the :ref:`class-reference` section below.
+需要更多的資訊請參考 :ref:`class-reference`。
 
 .. _saving-groups:
 
 ************************************************
-Saving Sets of Validation Rules to a Config File
+在配置檔中儲存驗證規則
 ************************************************
 
-A nice feature of the Form Validation class is that it permits you to
-store all your validation rules for your entire application in a config
-file. You can organize these rules into "groups". These groups can
-either be loaded automatically when a matching controller/method is
-called, or you can manually call each set as needed.
+Form Validation class 的一個功能是允許可以儲存你所有的驗證規則至一個配置檔中，
+你可以將這些驗證規則進行分組。這些驗證組別可以被自動的載入控制器或是被手動的載入。
 
-How to save your rules
+如何儲存你的驗證規則
 ======================
 
-To store your validation rules, simply create a file named
-form_validation.php in your application/config/ folder. In that file
-you will place an array named $config with your rules. As shown earlier,
-the validation array will have this prototype::
+如要儲存你自訂的驗證規則，只要建立一個檔案 form_validation.php，將此檔案儲存於 application/config 資料夾。
+於該檔案中放入命名為 $config 的陣列，如下所示的驗證規則雛形::
 
 	$config = array(
 		array(
@@ -749,18 +644,17 @@ the validation array will have this prototype::
 		)
 	);
 
+你的驗證規則將會被自動載入與執行 ``run()`` 方法的時候被使用。
 Your validation rule file will be loaded automatically and used when you
 call the ``run()`` method.
 
 Please note that you MUST name your ``$config`` array.
 
-Creating Sets of Rules
+創建多組驗證規則
 ======================
 
-In order to organize your rules into "sets" requires that you place them
-into "sub arrays". Consider the following example, showing two sets of
-rules. We've arbitrarily called these two rules "signup" and "email".
-You can name your rules anything you want::
+為了實現多組驗證規則，你必須於該驗證規則陣列中加上”子陣列“，如下範例展示兩組驗證規則。
+我們將該兩組驗證規則命名為"signup" and "email"，你可以任意的取其他的名字::
 
 	$config = array(
 		'signup' => array(
@@ -809,11 +703,11 @@ You can name your rules anything you want::
 		)
 	);
 
-Calling a Specific Rule Group
+呼叫某組驗證規則
 =============================
 
-In order to call a specific group, you will pass its name to the ``run()``
-method. For example, to call the signup rule you will do this::
+如要呼叫特定之驗證規則，你必須在 ``run()`` 方法中傳遞該組之名字。
+舉例來說，你要呼叫 signup 這組驗證規則，你可以如下這樣做::
 
 	if ($this->form_validation->run('signup') == FALSE)
 	{
@@ -824,7 +718,7 @@ method. For example, to call the signup rule you will do this::
 		$this->load->view('formsuccess');
 	}
 
-Associating a Controller Method with a Rule Group
+關聯控制器與特定驗證規則
 =================================================
 
 An alternate (and more automatic) method of calling a rule group is to
